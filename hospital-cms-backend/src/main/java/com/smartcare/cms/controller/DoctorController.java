@@ -23,15 +23,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DoctorController {
 
+    @Autowired
     private final DoctorService doctorService;
+    @Autowired
+    private final TokenService tokenService;
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<DoctorResponse>>> getAllDoctors(
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String specialty) {
-        return ResponseEntity.ok(
-                ApiResponse.ok("Doctors retrieved", doctorService.getAllDoctors(search, specialty)));
+
+    @GetMapping("/{doctorId}/availability")
+    public List<String> getDoctorAvailability(
+            @PathVariable Long doctorId,
+            @RequestParam String date,
+            @RequestParam String role,
+            @RequestHeader("Authorization") String token
+    ) {
+        // Validate JWT token
+        tokenService.validateToken(token.replace("Bearer ", ""));
+
+        // Role-based access (example logic)
+        if (!role.equalsIgnoreCase("ADMIN") && !role.equalsIgnoreCase("PATIENT")) {
+            throw new RuntimeException("Unauthorized role");
+        }
+
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+        // Return available times (stored as ElementCollection)
+        return doctor.getAvailableTimes();
     }
+
+   
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<DoctorResponse>> getDoctorById(@PathVariable Long id) {
