@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Hospital CMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Merriweather:wght@700;900&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   CSS VARIABLES & RESET
+============================================================ */
+:root {
+  --teal:        #3a9e8f;
+  --teal-dark:   #2b7a6e;
+  --teal-light:  #c8ebe7;
+  --teal-bg:     #d6f0ec;
+  --navy:        #1b3a4b;
+  --navy-mid:    #2c5364;
+  --crimson:     #8b1a1a;
+  --green-btn:   #3a7d44;
+  --green-hover: #2e6338;
+  --text:        #1b2a35;
+  --muted:       #5a7080;
+  --card-bg:     #ffffff;
+  --bg-main:     #dff2ef;
+  --border:      #b8dbd7;
+  --row-alt:     #c5e8e3;
+  --shadow:      0 4px 20px rgba(0,0,0,0.08);
+  --shadow-hover:0 8px 30px rgba(0,0,0,0.14);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg-main);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   SHARED: NAV
+============================================================ */
+.navbar {
+  background: #f0f0f0;
+  border-bottom: 1px solid #d8d8d8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 1.8rem;
+  position: sticky; top:0; z-index:200;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 1.15rem; font-weight: 800; color: var(--text);
+  cursor: pointer;
+}
+.nav-icon {
+  width: 36px; height: 36px;
+  background: var(--teal-dark);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+.nav-links { display: flex; gap: 1.4rem; align-items: center; }
+.nav-links a {
+  color: var(--text); text-decoration: none;
+  font-size: 0.92rem; font-weight: 600;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--teal-dark); }
+.nav-links a.active { color: var(--teal-dark); }
+
+/* ============================================================
+   SHARED: BACKGROUND MEDICAL ICONS (decorative)
+============================================================ */
+.bg-icons {
+  position: fixed; top: 0; right: 0;
+  width: 340px; height: 100%;
+  pointer-events: none; z-index: 0;
+  overflow: hidden;
+}
+.bg-icons svg { position: absolute; opacity: 0.18; }
+
+/* ============================================================
+   SHARED: PAGE WRAPPER
+============================================================ */
+.page { display: none; min-height: calc(100vh - 60px); position: relative; }
+.page.active { display: block; }
+
+/* ============================================================
+   FOOTER
+============================================================ */
+footer {
+  background: #f0f0f0;
+  border-top: 1px solid #d8d8d8;
+  padding: 1.4rem 3rem;
+  display: flex;
+  gap: 4rem;
+  align-items: flex-start;
+  position: relative; z-index: 10;
+}
+.footer-logo { width: 42px; height: 42px; background: var(--teal-dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+.footer-section h4 { font-size: 0.85rem; font-weight: 800; margin-bottom: 0.4rem; color: var(--text); }
+.footer-section a { display: block; font-size: 0.8rem; color: var(--muted); text-decoration: none; margin-bottom: 0.2rem; }
+.footer-section a:hover { color: var(--teal-dark); }
+
+/* ============================================================
+   PAGE 1: ROLE SELECT
+============================================================ */
+#page-role {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-main);
+}
+.role-center {
+  text-align: center;
+  animation: fadeUp 0.6s ease both;
+  position: relative; z-index: 5;
+}
+.role-center h1 {
+  font-family: 'Merriweather', serif;
+  font-size: 2.4rem;
+  color: var(--navy);
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+.role-center h1 span { color: var(--crimson); }
+.role-btn {
+  display: block;
+  width: 220px;
+  margin: 0 auto 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--teal-dark);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  letter-spacing: 0.02em;
+}
+.role-btn:hover { background: var(--teal); transform: translateY(-2px); }
+
+/* ============================================================
+   PAGE 2: DOCTOR LIST (Patient view after login)
+============================================================ */
+#page-doctors { background: var(--bg-main); padding-bottom: 3rem; }
+.search-bar-wrap {
+  padding: 1rem 1.5rem 0.5rem;
+  position: relative; z-index:5;
+}
+.search-bar-wrap input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid #c0c0c0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-family: 'Nunito', sans-serif;
+  background: white;
+  outline: none;
+}
+.search-bar-wrap input:focus { border-color: var(--teal); }
+
+.filters {
+  display: flex; gap: 0.75rem;
+  padding: 0.5rem 1.5rem 1rem;
+}
+.filters select {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid #c0c0c0;
+  border-radius: 4px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  background: white;
+  cursor: pointer;
+  outline: none;
+}
+
+.doctors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.2rem;
+  padding: 0 1.5rem;
+  position: relative; z-index: 5;
+}
+.doctor-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.4rem;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+  display: flex; flex-direction: column;
+}
+.doctor-card:hover { box-shadow: var(--shadow-hover); }
+.doctor-card h3 {
+  font-family: 'Merriweather', serif;
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--navy-mid); text-align: center;
+  margin-bottom: 0.5rem;
+}
+.doctor-card p {
+  font-size: 0.82rem; color: var(--muted);
+  text-align: center; margin-bottom: 0.25rem;
+  line-height: 1.5;
+}
+.book-btn {
+  margin-top: auto;
+  display: block; width: 100%;
+  padding: 0.7rem;
+  background: var(--navy);
+  color: white;
+  border: none; border-radius: 0 0 8px 8px;
+  margin: 1rem -1.4rem -1.4rem;
+  width: calc(100% + 2.8rem);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem; font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  letter-spacing: 0.03em;
+}
+.book-btn:hover { background: var(--navy-mid); }
+
+/* ============================================================
+   PAGE 3: UPDATE APPOINTMENT
+============================================================ */
+#page-update-appt {
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 3rem 1rem;
+  background: var(--bg-main);
+}
+.form-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2.2rem 2.5rem;
+  width: 100%; max-width: 500px;
+  box-shadow: var(--shadow);
+  position: relative; z-index: 5;
+  animation: fadeUp 0.5s ease both;
+}
+.form-card h2 {
+  font-family: 'Merriweather', serif;
+  font-size: 1.5rem; font-weight: 700;
+  text-align: center;
+  color: var(--navy);
+  margin-bottom: 1.5rem;
+}
+.form-card h2 span { color: var(--crimson); }
+.form-group { margin-bottom: 1.1rem; }
+.form-group label {
+  display: block;
+  font-size: 0.8rem; font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 5px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  background: white;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--teal); }
+.form-group input[readonly] { background: #e8e8e8; cursor: default; }
+.form-group textarea { resize: vertical; min-height: 90px; }
+
+.btn-primary {
+  display: block; width: 100%;
+  padding: 0.75rem;
+  background: var(--green-btn);
+  color: white; border: none; border-radius: 5px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem; font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 0.75rem;
+}
+.btn-primary:hover { background: var(--green-hover); }
+.btn-secondary {
+  display: block; width: 100%;
+  padding: 0.7rem;
+  background: white;
+  color: var(--text);
+  border: 1px solid #d0d0d0;
+  border-radius: 5px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem; font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: #f5f5f5; }
+
+/* ============================================================
+   PAGE 4: PATIENT RECORD TABLE
+============================================================ */
+#page-patient-record { background: var(--bg-main); padding: 2rem 1.5rem 3rem; }
+.page-title {
+  font-family: 'Merriweather', serif;
+  font-size: 1.8rem; font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  margin-bottom: 1.8rem;
+  position: relative; z-index: 5;
+}
+.page-title span { color: var(--crimson); }
+.record-table-wrap {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative; z-index: 5;
+}
+.record-table { width: 100%; border-collapse: collapse; }
+.record-table thead tr {
+  background: #e8f5f3;
+}
+.record-table th {
+  padding: 1rem 1.5rem;
+  font-size: 0.9rem; font-weight: 800;
+  color: var(--navy);
+  text-align: center;
+}
+.record-table td {
+  padding: 0.9rem 1.5rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+  text-align: center;
+  border-top: 1px solid #eee;
+}
+.record-table tbody tr:nth-child(even) { background: var(--row-alt); }
+.record-table tbody tr:hover { background: #b8dbd7; }
+.prescription-icon {
+  cursor: pointer;
+  font-size: 1.4rem;
+  transition: transform 0.2s;
+}
+.prescription-icon:hover { transform: scale(1.2); }
+
+/* ============================================================
+   PAGE 5: VIEW PRESCRIPTION (modal-style page)
+============================================================ */
+#page-prescription { background: var(--bg-main); padding: 3rem 1rem; }
+
+/* ============================================================
+   LOGIN / SIGNUP MODAL
+============================================================ */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 300;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: white;
+  border-radius: 12px;
+  padding: 2.2rem 2.5rem;
+  width: 100%; max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: fadeUp 0.3s ease both;
+}
+.modal-box h2 {
+  font-family: 'Merriweather', serif;
+  font-size: 1.4rem;
+  color: var(--navy); text-align: center;
+  margin-bottom: 1.4rem;
+}
+.modal-box h2 span { color: var(--crimson); }
+.modal-close {
+  float: right; cursor: pointer;
+  font-size: 1.2rem; color: var(--muted);
+  background: none; border: none;
+  margin-top: -0.3rem;
+}
+.modal-footer { text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--muted); }
+.modal-footer a { color: var(--teal-dark); font-weight: 700; cursor: pointer; }
+
+/* ============================================================
+   BOOK APPOINTMENT MODAL
+============================================================ */
+#book-modal .modal-box { max-width: 460px; }
+
+/* ============================================================
+   TOAST NOTIFICATION
+============================================================ */
+.toast {
+  display: none;
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  background: var(--teal-dark); color: white;
+  padding: 0.85rem 1.4rem;
+  border-radius: 8px; font-size: 0.9rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 500;
+  animation: fadeUp 0.3s ease both;
+}
+
+/* ============================================================
+   ADMIN DASHBOARD (bonus page)
+============================================================ */
+#page-admin { background: var(--bg-main); padding: 2rem 1.5rem 3rem; }
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.2rem;
+  max-width: 900px; margin: 0 auto 2rem;
+  position: relative; z-index: 5;
+}
+.stat-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border-top: 4px solid var(--teal);
+}
+.stat-card .stat-num {
+  font-size: 2.2rem; font-weight: 800; color: var(--teal-dark);
+}
+.stat-card .stat-label {
+  font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem;
+}
+.admin-table-wrap {
+  background: white; border-radius: 10px;
+  overflow: hidden; box-shadow: var(--shadow);
+  max-width: 900px; margin: 0 auto;
+  position: relative; z-index: 5;
+}
+.admin-table-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+.admin-table-header h3 { font-weight: 800; font-size: 1rem; color: var(--navy); }
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th {
+  background: #e8f5f3;
+  padding: 0.8rem 1.2rem;
+  font-size: 0.85rem; font-weight: 800;
+  color: var(--navy); text-align: left;
+}
+.admin-table td {
+  padding: 0.75rem 1.2rem;
+  font-size: 0.85rem; color: var(--muted);
+  border-top: 1px solid #f0f0f0;
+}
+.admin-table tr:hover td { background: #f5fbfa; }
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.75rem; font-weight: 700;
+}
+.badge-scheduled { background: #d1fae5; color: #065f46; }
+.badge-completed { background: #dbeafe; color: #1e40af; }
+.badge-cancelled { background: #fee2e2; color: #991b1b; }
+.action-btn {
+  padding: 0.25rem 0.65rem;
+  border-radius: 4px;
+  border: none; cursor: pointer;
+  font-size: 0.78rem; font-weight: 700;
+  margin-right: 0.3rem;
+  transition: opacity 0.2s;
+}
+.action-btn:hover { opacity: 0.8; }
+.action-edit { background: var(--teal-light); color: var(--teal-dark); }
+.action-delete { background: #fee2e2; color: #991b1b; }
+
+/* ============================================================
+   ANIMATIONS
+============================================================ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.stagger > * { animation: fadeUp 0.4s ease both; }
+.stagger > *:nth-child(2) { animation-delay: 0.07s; }
+.stagger > *:nth-child(3) { animation-delay: 0.14s; }
+.stagger > *:nth-child(4) { animation-delay: 0.21s; }
+.stagger > *:nth-child(5) { animation-delay: 0.28s; }
+.stagger > *:nth-child(6) { animation-delay: 0.35s; }
+
+/* ============================================================
+   DOCTOR DASHBOARD
+============================================================ */
+#page-doctor { background: var(--bg-main); padding: 2rem 1.5rem 3rem; }
+.doctor-dash-title { max-width: 900px; margin: 0 auto 1.5rem; position: relative; z-index: 5; }
+.doctor-dash-title h2 {
+  font-family: 'Merriweather', serif;
+  font-size: 1.5rem; font-weight: 700; color: var(--navy);
+}
+.doctor-dash-title p { color: var(--muted); font-size: 0.9rem; }
+
+/* ============================================================
+   HERO SPACER (role select page)
+============================================================ */
+.role-page-inner {
+  min-height: calc(100vh - 110px);
+  display: flex; align-items: center; justify-content: center;
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== DECORATIVE BG ICONS ===================== -->
+<div class="bg-icons" aria-hidden="true">
+  <svg width="260" height="260" style="top:30px;right:-30px;" viewBox="0 0 100 100">
+    <path fill="#3a9e8f" d="M50 10 C30 10,10 25,10 50 C10 75,30 90,50 90 C70 90,90 75,90 50 C90 25,70 10,50 10Z"/>
+    <path fill="white" d="M44 35 L44 55 L38 55 L38 62 L44 62 L44 82 L56 82 L56 62 L62 62 L62 55 L56 55 L56 35Z"/>
+    <polyline fill="none" stroke="white" stroke-width="4" points="20,50 32,50 38,38 44,62 50,44 56,56 62,50 80,50"/>
+  </svg>
+  <svg width="140" height="140" style="top:200px;right:30px;" viewBox="0 0 100 100">
+    <rect x="5" y="5" width="90" height="90" rx="18" fill="#3a9e8f"/>
+    <path fill="white" d="M30 20 L30 80 L70 80 L70 35 L55 20Z M55 20 L55 35 L70 35"/>
+    <line x1="35" y1="45" x2="65" y2="45" stroke="#3a9e8f" stroke-width="3"/>
+    <line x1="35" y1="55" x2="65" y2="55" stroke="#3a9e8f" stroke-width="3"/>
+    <line x1="35" y1="65" x2="55" y2="65" stroke="#3a9e8f" stroke-width="3"/>
+  </svg>
+  <svg width="120" height="120" style="top:380px;right:60px;" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="45" fill="#3a9e8f"/>
+    <text x="50" y="65" text-anchor="middle" fill="white" font-size="42" font-weight="bold">+</text>
+  </svg>
+  <svg width="160" height="160" style="top:540px;right:10px;" viewBox="0 0 100 100">
+    <rect x="10" y="10" width="80" height="80" rx="12" fill="#3a9e8f"/>
+    <path fill="white" d="M30 45 L30 75 L70 75 L70 45 L50 28Z"/>
+    <rect x="42" y="55" width="16" height="20" fill="#3a9e8f"/>
+  </svg>
+</div>
+
+<!-- ===================== NAVBAR ===================== -->
+<nav class="navbar">
+  <div class="nav-brand" onclick="goHome()">
+    <div class="nav-icon">🏥</div>
+    Hospital CMS
+  </div>
+  <div class="nav-links" id="nav-links">
+    <a href="#" onclick="showModal('login-modal')" id="nav-login">Login</a>
+    <a href="#" onclick="showModal('signup-modal')" id="nav-signup">Sign Up</a>
+  </div>
+</nav>
+
+<!-- ===================== PAGES ===================== -->
+
+<!-- PAGE 1: ROLE SELECTION -->
+<div class="page active" id="page-role">
+  <div class="role-page-inner">
+    <div class="role-center">
+      <h1>Select Your <span>Role</span></h1>
+      <button class="role-btn" onclick="selectRole('admin')">Admin</button>
+      <button class="role-btn" onclick="selectRole('patient')">Patient</button>
+      <button class="role-btn" onclick="selectRole('doctor')">Doctor</button>
+    </div>
+  </div>
+  <!-- Footer on this page -->
+  <footer>
+    <div class="footer-logo">🏥</div>
+    <div class="footer-section">
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Careers</a>
+    </div>
+    <div class="footer-section">
+      <h4>Support</h4>
+      <a href="#">Account</a>
+      <a href="#">Help Center</a>
+    </div>
+    <div class="footer-section">
+      <h4>Legals</h4>
+      <a href="#">Terms &amp; Conditions</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+  </footer>
+</div>
+
+<!-- PAGE 2: DOCTORS LIST (Patient) -->
+<div class="page" id="page-doctors">
+  <div class="search-bar-wrap">
+    <input type="text" id="doctor-search" placeholder="Search Bar for custom output" oninput="filterDoctors()"/>
+  </div>
+  <div class="filters">
+    <select id="filter-time" onchange="filterDoctors()">
+      <option value="">All Times</option>
+      <option value="AM">AM</option>
+      <option value="PM">PM</option>
+    </select>
+    <select id="filter-specialty" onchange="filterDoctors()">
+      <option value="">Filter by Specialty</option>
+      <option value="Cardiologist">Cardiologist</option>
+      <option value="Neurologist">Neurologist</option>
+      <option value="Orthopedist">Orthopedist</option>
+      <option value="Pediatrician">Pediatrician</option>
+      <option value="Dermatologist">Dermatologist</option>
+    </select>
+  </div>
+  <div class="doctors-grid stagger" id="doctors-grid"></div>
+</div>
+
+<!-- PAGE 3: UPDATE APPOINTMENT -->
+<div class="page" id="page-update-appt">
+  <div class="form-card">
+    <h2>Update <span>Appointment</span></h2>
+    <div class="form-group">
+      <label>Patient Name</label>
+      <input type="text" id="upd-patient" value="John Smith" readonly/>
+    </div>
+    <div class="form-group">
+      <label>Doctor Name</label>
+      <input type="text" id="upd-doctor" value="John Smith"/>
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" id="upd-date" value="2025-05-22"/>
+    </div>
+    <div class="form-group">
+      <label>Time</label>
+      <select id="upd-time">
+        <option>09:00-10:00</option>
+        <option>10:00-11:00</option>
+        <option>11:00-12:00</option>
+        <option>14:00-15:00</option>
+        <option>15:00-16:00</option>
+        <option>16:00-17:00</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="updateAppointment()">Update Appointment</button>
+    <button class="btn-secondary" onclick="showPage('page-patient-record')">Cancel</button>
+  </div>
+</div>
+
+<!-- PAGE 4: PATIENT RECORD -->
+<div class="page" id="page-patient-record">
+  <div class="page-title"><span id="record-owner-name">Patient</span> <span>Record</span></div>
+  <div class="record-table-wrap">
+    <table class="record-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Appointment ID</th>
+          <th>Patient ID</th>
+          <th>Prescription</th>
+        </tr>
+      </thead>
+      <tbody id="record-tbody">
+        <tr>
+          <td>2025-05-23</td>
+          <td>131</td>
+          <td>26</td>
+          <td><span class="prescription-icon" onclick="viewPrescription(131)" title="View Prescription">📋</span></td>
+        </tr>
+        <tr>
+          <td>2025-05-22</td>
+          <td>132</td>
+          <td>26</td>
+          <td><span class="prescription-icon" onclick="viewPrescription(132)" title="View Prescription">📋</span></td>
+        </tr>
+        <tr>
+          <td>2025-05-22</td>
+          <td>133</td>
+          <td>26</td>
+          <td><span class="prescription-icon" onclick="viewPrescription(133)" title="View Prescription">📋</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <footer style="max-width:900px;margin:2rem auto 0;background:transparent;border-top:1px solid #c0c0c0;padding:1.2rem 0;">
+    <div class="footer-logo">🏥</div>
+    <div class="footer-section">
+      <h4>Company</h4>
+      <a href="#">About</a>
+    </div>
+    <div class="footer-section">
+      <h4>Support</h4>
+      <a href="#">Account</a>
+    </div>
+    <div class="footer-section">
+      <h4>Legals</h4>
+      <a href="#">Terms &amp; Conditions</a>
+    </div>
+  </footer>
+</div>
+
+<!-- PAGE 5: VIEW PRESCRIPTION -->
+<div class="page" id="page-prescription">
+  <div class="form-card" style="max-width:520px;margin:0 auto;">
+    <h2>View <span>Prescription</span></h2>
+    <div class="form-group">
+      <label>Patient Name</label>
+      <input type="text" id="rx-patient" value="John Smith" readonly/>
+    </div>
+    <div class="form-group">
+      <label>Medicine Names</label>
+      <input type="text" id="rx-medicine" value="Vitamin C tablets"/>
+    </div>
+    <div class="form-group">
+      <label>Dosage Instructions</label>
+      <textarea id="rx-dosage">Twice a day</textarea>
+    </div>
+    <div class="form-group">
+      <label>Additional Notes</label>
+      <textarea id="rx-notes">NA</textarea>
+    </div>
+    <button class="btn-secondary" onclick="showPage('page-patient-record')">Cancel</button>
+  </div>
+</div>
+
+<!-- PAGE 6: ADMIN DASHBOARD -->
+<div class="page" id="page-admin">
+  <div class="page-title">Admin <span>Dashboard</span></div>
+  <div class="admin-stats stagger">
+    <div class="stat-card">
+      <div class="stat-num">6</div>
+      <div class="stat-label">Doctors</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">24</div>
+      <div class="stat-label">Patients</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">133</div>
+      <div class="stat-label">Appointments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">89</div>
+      <div class="stat-label">Prescriptions</div>
+    </div>
+  </div>
+  <div class="admin-table-wrap">
+    <div class="admin-table-header">
+      <h3>Recent Appointments</h3>
+      <button class="action-btn action-edit" onclick="showPage('page-update-appt')">+ New</button>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>131</td><td>John Smith</td><td>Dr. Emily Adams</td><td>2025-05-23</td><td>09:00-10:00</td>
+          <td><span class="badge badge-scheduled">Scheduled</span></td>
+          <td>
+            <button class="action-btn action-edit" onclick="showPage('page-update-appt')">Edit</button>
+            <button class="action-btn action-delete" onclick="deleteRow(this)">Del</button>
+          </td>
+        </tr>
+        <tr>
+          <td>132</td><td>Jane Doe</td><td>Dr. Mark Johnson</td><td>2025-05-22</td><td>10:00-11:00</td>
+          <td><span class="badge badge-completed">Completed</span></td>
+          <td>
+            <button class="action-btn action-edit" onclick="showPage('page-update-appt')">Edit</button>
+            <button class="action-btn action-delete" onclick="deleteRow(this)">Del</button>
+          </td>
+        </tr>
+        <tr>
+          <td>133</td><td>Alice Brown</td><td>Dr. Sarah Lee</td><td>2025-05-22</td><td>14:00-15:00</td>
+          <td><span class="badge badge-cancelled">Cancelled</span></td>
+          <td>
+            <button class="action-btn action-edit" onclick="showPage('page-update-appt')">Edit</button>
+            <button class="action-btn action-delete" onclick="deleteRow(this)">Del</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PAGE 7: DOCTOR DASHBOARD -->
+<div class="page" id="page-doctor">
+  <div class="doctor-dash-title">
+    <h2>Welcome, Dr. <span id="doctor-name-display">Smith</span></h2>
+    <p>Here are your upcoming appointments for today.</p>
+  </div>
+  <div class="admin-table-wrap" style="max-width:900px;margin:0 auto;position:relative;z-index:5;">
+    <div class="admin-table-header">
+      <h3>My Appointments</h3>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr><th>Patient</th><th>Date</th><th>Time</th><th>Status</th><th>Prescription</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>John Smith</td><td>2025-05-23</td><td>09:00-10:00</td>
+          <td><span class="badge badge-scheduled">Scheduled</span></td>
+          <td><span class="prescription-icon" onclick="viewPrescription(131)">📋</span></td>
+        </tr>
+        <tr>
+          <td>Jane Doe</td><td>2025-05-23</td><td>10:00-11:00</td>
+          <td><span class="badge badge-scheduled">Scheduled</span></td>
+          <td><span class="prescription-icon" onclick="viewPrescription(132)">📋</span></td>
+        </tr>
+        <tr>
+          <td>Alice Brown</td><td>2025-05-22</td><td>14:00-15:00</td>
+          <td><span class="badge badge-completed">Completed</span></td>
+          <td><span class="prescription-icon" onclick="viewPrescription(133)">📋</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===================== MODALS ===================== -->
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="login-modal" onclick="closeModalOutside(event,'login-modal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('login-modal')">✕</button>
+    <h2><span>Login</span> to CMS</h2>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="you@example.com"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••"/>
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Login</button>
+    <div class="modal-footer">Don't have an account? <a onclick="switchModal('login-modal','signup-modal')">Sign Up</a></div>
+  </div>
+</div>
+
+<!-- SIGNUP MODAL -->
+<div class="modal-overlay" id="signup-modal" onclick="closeModalOutside(event,'signup-modal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('signup-modal')">✕</button>
+    <h2><span>Create</span> Account</h2>
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="signup-name" placeholder="John Smith"/>
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="signup-email" placeholder="you@example.com"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="signup-pass" placeholder="••••••••"/>
+    </div>
+    <button class="btn-primary" onclick="doSignup()">Create Account</button>
+    <div class="modal-footer">Already have an account? <a onclick="switchModal('signup-modal','login-modal')">Login</a></div>
+  </div>
+</div>
+
+<!-- BOOK APPOINTMENT MODAL -->
+<div class="modal-overlay" id="book-modal" onclick="closeModalOutside(event,'book-modal')">
+  <div class="modal-box" id="book-modal">
+    <button class="modal-close" onclick="closeModal('book-modal')">✕</button>
+    <h2>Book <span>Appointment</span></h2>
+    <div class="form-group">
+      <label>Doctor</label>
+      <input type="text" id="book-doctor" readonly/>
+    </div>
+    <div class="form-group">
+      <label>Patient Name</label>
+      <input type="text" id="book-patient" placeholder="Your name"/>
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" id="book-date"/>
+    </div>
+    <div class="form-group">
+      <label>Time Slot</label>
+      <select id="book-time"></select>
+    </div>
+    <button class="btn-primary" onclick="confirmBooking()">Confirm Booking</button>
+    <button class="btn-secondary" onclick="closeModal('book-modal')">Cancel</button>
+  </div>
+</div>
+
+<!-- ===================== TOAST ===================== -->
+<div class="toast" id="toast"></div>
+
+<!-- ===================== JAVASCRIPT ===================== -->
+<script>
+/* -------------------------------------------------------
+   DATA
+------------------------------------------------------- */
+const doctors = [
+  { id:1, name:'Dr. Emily Adams',   specialty:'Cardiologist',  email:'dr.adams@example.com',  slots:['09:00-10:00','10:00-11:00','11:00-12:00','14:00-15:00'] },
+  { id:2, name:'Dr. Mark Johnson',  specialty:'Neurologist',   email:'dr.johnson@example.com', slots:['10:00-11:00','11:00-12:00','14:00-15:00','15:00-16:00'] },
+  { id:3, name:'Dr. Sarah Lee',     specialty:'Orthopedist',   email:'dr.lee@example.com',    slots:['09:00-10:00','11:00-12:00','14:00-15:00','16:00-17:00'] },
+  { id:4, name:'Dr. Tom Wilson',    specialty:'Pediatrician',  email:'dr.wilson@example.com', slots:['09:00-10:00','15:00-16:00','16:00-17:00'] },
+  { id:5, name:'Dr. Alice Brown',   specialty:'Dermatologist', email:'dr.brown@example.com',  slots:['09:00-10:00','10:00-11:00','14:00-15:00','15:00-16:00'] },
+  { id:6, name:'Dr. Taylor Grant',  specialty:'Cardiologist',  email:'dr.taylor@example.com', slots:['11:00-12:00','14:00-15:00','15:00-16:00'] },
+];
+
+const prescriptions = {
+  131: { patient:'John Smith', medicine:'Vitamin C tablets', dosage:'Twice a day', notes:'NA' },
+  132: { patient:'Jane Doe',   medicine:'Amoxicillin 500mg', dosage:'Three times a day', notes:'Take with food' },
+  133: { patient:'Alice Brown',medicine:'Ibuprofen 200mg',  dosage:'Once a day', notes:'Avoid alcohol' },
+};
+
+let currentRole = null;
+let loggedIn    = false;
+let currentUser = {};
+
+/* -------------------------------------------------------
+   NAVIGATION
+------------------------------------------------------- */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function goHome() {
+  if (loggedIn) {
+    if (currentRole === 'admin')   showPage('page-admin');
+    else if (currentRole === 'doctor') showPage('page-doctor');
+    else showPage('page-doctors');
+  } else {
+    showPage('page-role');
+  }
+}
+
+/* -------------------------------------------------------
+   ROLE SELECTION
+------------------------------------------------------- */
+function selectRole(role) {
+  currentRole = role;
+  showModal('login-modal');
+}
+
+/* -------------------------------------------------------
+   AUTH
+------------------------------------------------------- */
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value.trim();
+  if (!email || !pass) { showToast('Please fill all fields'); return; }
+
+  loggedIn = true;
+  currentUser = { name: email.split('@')[0], email };
+  closeModal('login-modal');
+  setLoggedInNav();
+
+  if (currentRole === 'admin')        { showPage('page-admin'); }
+  else if (currentRole === 'doctor')  { document.getElementById('doctor-name-display').textContent = currentUser.name; showPage('page-doctor'); }
+  else                                { renderDoctors(doctors); showPage('page-doctors'); }
+  showToast('Logged in as ' + currentRole + ' successfully!');
+}
+
+function doSignup() {
+  const name  = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pass  = document.getElementById('signup-pass').value.trim();
+  if (!name || !email || !pass) { showToast('Please fill all fields'); return; }
+  closeModal('signup-modal');
+  showToast('Account created! Please log in.');
+  showModal('login-modal');
+  document.getElementById('login-email').value = email;
+}
+
+function setLoggedInNav() {
+  const nl = document.getElementById('nav-links');
+  if (currentRole === 'patient') {
+    nl.innerHTML = `
+      <a href="#" onclick="showPage('page-doctors')">Home</a>
+      <a href="#" onclick="showPage('page-patient-record')">Appointments</a>
+      <a href="#" onclick="doLogout()">Logout</a>`;
+  } else if (currentRole === 'admin') {
+    nl.innerHTML = `
+      <a href="#" onclick="showPage('page-admin')">Dashboard</a>
+      <a href="#" onclick="showPage('page-doctors')">Doctors</a>
+      <a href="#" onclick="doLogout()">Logout</a>`;
+  } else {
+    nl.innerHTML = `
+      <a href="#" onclick="showPage('page-doctor')">Home</a>
+      <a href="#" onclick="showPage('page-patient-record')">Records</a>
+      <a href="#" onclick="doLogout()">Logout</a>`;
+  }
+}
+
+function doLogout() {
+  loggedIn = false; currentRole = null; currentUser = {};
+  document.getElementById('nav-links').innerHTML = `
+    <a href="#" onclick="showModal('login-modal')">Login</a>
+    <a href="#" onclick="showModal('signup-modal')">Sign Up</a>`;
+  showPage('page-role');
+  showToast('Logged out successfully');
+}
+
+/* -------------------------------------------------------
+   DOCTORS GRID
+------------------------------------------------------- */
+function renderDoctors(list) {
+  const grid = document.getElementById('doctors-grid');
+  if (list.length === 0) {
+    grid.innerHTML = '<p style="color:var(--muted);padding:2rem;grid-column:1/-1;text-align:center;">No doctors found.</p>';
+    return;
+  }
+  grid.innerHTML = list.map(d => `
+    <div class="doctor-card">
+      <h3>${d.name}</h3>
+      <p>Specialization: ${d.specialty}</p>
+      <p>Email: ${d.email}</p>
+      <p>Available: ${d.slots.join(', ')}</p>
+      <button class="book-btn" onclick="openBookModal(${d.id})">Book Now</button>
+    </div>`).join('');
+}
+
+function filterDoctors() {
+  const q    = document.getElementById('doctor-search').value.toLowerCase();
+  const time = document.getElementById('filter-time').value;
+  const spec = document.getElementById('filter-specialty').value;
+
+  let filtered = doctors.filter(d => {
+    const matchQ    = d.name.toLowerCase().includes(q) || d.specialty.toLowerCase().includes(q);
+    const matchSpec = !spec || d.specialty === spec;
+    const matchTime = !time || d.slots.some(s => {
+      const hour = parseInt(s.split(':')[0]);
+      return time === 'AM' ? hour < 12 : hour >= 12;
+    });
+    return matchQ && matchSpec && matchTime;
+  });
+  renderDoctors(filtered);
+}
+
+/* -------------------------------------------------------
+   BOOK APPOINTMENT
+------------------------------------------------------- */
+function openBookModal(doctorId) {
+  if (!loggedIn) { showModal('login-modal'); showToast('Please login to book an appointment'); return; }
+  const doc = doctors.find(d => d.id === doctorId);
+  document.getElementById('book-doctor').value = doc.name;
+  const sel = document.getElementById('book-time');
+  sel.innerHTML = doc.slots.map(s => `<option>${s}</option>`).join('');
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('book-date').value = today;
+  document.getElementById('book-patient').value = currentUser.name || '';
+  showModal('book-modal');
+}
+
+function confirmBooking() {
+  const patient = document.getElementById('book-patient').value.trim();
+  const date    = document.getElementById('book-date').value;
+  if (!patient || !date) { showToast('Please fill all fields'); return; }
+  closeModal('book-modal');
+  showToast('Appointment booked successfully! ✓');
+}
+
+/* -------------------------------------------------------
+   UPDATE APPOINTMENT
+------------------------------------------------------- */
+function updateAppointment() {
+  showToast('Appointment updated successfully! ✓');
+  setTimeout(() => showPage('page-patient-record'), 800);
+}
+
+/* -------------------------------------------------------
+   PATIENT RECORD / PRESCRIPTION
+------------------------------------------------------- */
+function viewPrescription(apptId) {
+  const rx = prescriptions[apptId];
+  if (!rx) return;
+  document.getElementById('rx-patient').value  = rx.patient;
+  document.getElementById('rx-medicine').value = rx.medicine;
+  document.getElementById('rx-dosage').value   = rx.dosage;
+  document.getElementById('rx-notes').value    = rx.notes;
+  showPage('page-prescription');
+}
+
+/* -------------------------------------------------------
+   ADMIN ACTIONS
+------------------------------------------------------- */
+function deleteRow(btn) {
+  if (confirm('Delete this appointment?')) {
+    btn.closest('tr').remove();
+    showToast('Appointment deleted');
+  }
+}
+
+/* -------------------------------------------------------
+   MODAL HELPERS
+------------------------------------------------------- */
+function showModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function closeModalOutside(e, id) {
+  if (e.target === document.getElementById(id)) closeModal(id);
+}
+function switchModal(from, to) {
+  closeModal(from); showModal(to);
+}
+
+/* -------------------------------------------------------
+   TOAST
+------------------------------------------------------- */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+/* -------------------------------------------------------
+   INIT
+------------------------------------------------------- */
+renderDoctors(doctors);
+</script>
+</body>
+</html>
