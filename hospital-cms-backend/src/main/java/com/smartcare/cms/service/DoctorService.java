@@ -33,6 +33,11 @@ public class DoctorService {
 
         return doctors.stream().map(this::toResponse).collect(Collectors.toList());
     }
+    public List<String> getDoctorAvailability(Long doctorId, String date) {
+    Doctor doctor = doctorRepository.findById(doctorId)
+            .orElseThrow(() -> new RuntimeException("Doctor not found"));
+    return doctor.getAvailableTimes();
+}
 
     /** Return a single doctor by ID. */
     @Transactional(readOnly = true)
