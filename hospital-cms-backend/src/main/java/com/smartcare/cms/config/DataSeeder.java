@@ -103,4 +103,10 @@ public class DataSeeder implements CommandLineRunner {
                 .patient(patient).doctor(doctor)
                 .appointmentDate(date).timeSlot(slot).status(status).build());
     }
+	public void validateToken(String token) {
+    if (token == null || token.isEmpty()) {
+        throw new RuntimeException("Invalid token");
+    }
+    // (In real apps, JWT parsing & expiry checks go here)
+}
 }
