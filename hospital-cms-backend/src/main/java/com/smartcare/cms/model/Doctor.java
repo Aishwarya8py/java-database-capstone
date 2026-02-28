@@ -64,5 +64,14 @@ public class Doctor {
     public List<String> getSlotList() {
         if (availableSlots == null || availableSlots.isBlank()) return List.of();
         return List.of(availableSlots.split(","));
+        
     }
+     @ElementCollection
+    @CollectionTable(
+        name = "doctor_available_times",
+        joinColumns = @JoinColumn(name = "doctor_id")
+    )
+    @Column(name = "available_time")
+    private List<String> availableTimes;
+}
 }
