@@ -27,6 +27,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     List<Appointment> findByDoctorIdAndAppointmentDate(Long doctorId, LocalDate date);
 
+    Optional<Patient> findByEmailOrPhone(String email, String phone);
+
     /** Check for slot conflict before booking. */
     @Query("SELECT COUNT(a) > 0 FROM Appointment a WHERE " +
            "a.doctor.id = :doctorId AND " +
