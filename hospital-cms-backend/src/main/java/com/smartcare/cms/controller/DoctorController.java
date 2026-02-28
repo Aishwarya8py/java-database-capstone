@@ -26,7 +26,7 @@ public class DoctorController {
     @Autowired
     private final DoctorService doctorService;
     @Autowired
-    private final TokenService tokenService;
+    private final AuthService authService;
 
 
     @GetMapping("/{doctorId}/availability")
@@ -37,7 +37,7 @@ public class DoctorController {
             @RequestHeader("Authorization") String token
     ) {
         // Validate JWT token
-        tokenService.validateToken(token.replace("Bearer ", ""));
+        authService.validateToken(token.replace("Bearer ", ""));
 
         // Role-based access (example logic)
         if (!role.equalsIgnoreCase("ADMIN") && !role.equalsIgnoreCase("PATIENT")) {
